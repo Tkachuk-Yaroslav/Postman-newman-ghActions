@@ -22,17 +22,19 @@ jobs:
       - name: Make Directory for results
         run: mkdir -p testResults
 
+        - name: Upload the contents of Test Results directory to workspace
+        uses: actions/upload-artifact@v2
+        with:
+          name: RunReports
+          path: testResults/
+
       - name: Run POSTMAN collection
         run: |
-          newman run store.collection.json
+          newman run petstore.collection.json
 
       - name: Check newman run output
         run: |
           echo "Newman run output:"
           cat testResults/runreport1.html || echo "File runreport1.html not found"
 
-      - name: Upload the contents of Test Results directory to workspace
-        uses: actions/upload-artifact@v2
-        with:
-          name: RunReports
-          path: testResults/
+      
