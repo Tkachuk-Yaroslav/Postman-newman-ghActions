@@ -1,3 +1,44 @@
+# name: Test-Build
+# on:
+#   push:
+#     branches:
+#       - main
+# jobs:
+#   test-api:
+#     runs-on: ubuntu-latest
+#     steps:
+#       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+#       - uses: actions/checkout@v2
+
+#       # INstall Node on the runner
+#       - name: Install Node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: "16.x"
+
+#       # Install the newman command line utility and also install the html extra reporter
+#       - name: Install newman
+#         run: |
+#           npm install -g newman
+#           npm install -g newman-reporter-htmlextra
+
+#       # Make directory to upload the test results
+#       - name: Make Directory for results
+#         run: mkdir -p testResults
+
+#       # Run the POSTMAN collection
+#       - name: Run POSTMAN collection
+#         run: |
+#           newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/runreport1.html
+#         continue-on-error: true
+
+#       # Upload the contents of Test Results directory to workspace
+#       - name: Output the run Details
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: RunReports
+#           path: testResults
+
 name: Test-Build
 on:
   push:
@@ -10,7 +51,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # INstall Node on the runner
+      # Install Node on the runner
       - name: Install Node
         uses: actions/setup-node@v1
         with:
@@ -29,7 +70,7 @@ jobs:
       # Run the POSTMAN collection
       - name: Run POSTMAN collection
         run: |
-          newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/runreport1.html
+          newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html
         continue-on-error: true
 
       # Upload the contents of Test Results directory to workspace
@@ -38,3 +79,28 @@ jobs:
         with:
           name: RunReports
           path: testResults
+
+      # Checkout gh-pages branch
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      # Copy the test results to the gh-pages directory
+      - name: Copy results to gh-pages
+        run: |
+          mkdir -p docs
+          cp -r testResults/* docs/
+
+      # Commit and push the results to gh-pages branch
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs
+          git commit -m "Deploy test results to GitHub Pages"
+          git push origin gh-pages
+
+      # Clean up workspace (optional)
+      - name: Clean up workspace
+        run: rm -rf testResults
