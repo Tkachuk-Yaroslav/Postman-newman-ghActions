@@ -24,17 +24,12 @@ jobs:
 
       - name: Run POSTMAN collection
         run: |
-          newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html
+          newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html 2>&1
 
-      - name: List files in testResults
-        run: ls -la testResults
-
-      - name: Check testResults directory
+      - name: Check newman run output
         run: |
-          echo "Contents of testResults:"
-          ls -la testResults
-          echo "Contents of runreport1.html:"
-          cat testResults/runreport1.html
+          echo "Newman run output:"
+          cat testResults/runreport1.html || echo "File runreport1.html not found"
 
       - name: Upload the contents of Test Results directory to workspace
         uses: actions/upload-artifact@v2
