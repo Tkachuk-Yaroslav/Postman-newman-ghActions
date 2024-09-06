@@ -135,10 +135,6 @@ jobs:
           newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html
         continue-on-error: true
 
-      # Output the contents of Test Results directory to verify results
-      - name: List test results
-        run: ls -al testResults
-
       # Upload the contents of Test Results directory to workspace
       - name: Output the run Details
         uses: actions/upload-artifact@v2
@@ -146,23 +142,23 @@ jobs:
           name: RunReports
           path: testResults
 
-      # Download the test results artifact
       - name: Download the test results artifact
         uses: actions/download-artifact@v2
         with:
           name: RunReports
 
-      # Create a directory in the repo and copy test results there
-      - name: Copy test results to repo
+      # Copy the HTML report to the root directory
+      - name: Copy HTML report to root
         run: |
-          cp -r testResults/* ./
-          ls -al
+          mkdir -p results
+          cp testResults/htmlreport.html results/
+          ls -al results
 
       # Commit and push the results to the repo
       - name: Commit and push results
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add htmlreport.html
-          git commit -m "Add test results"
+          git add results/htmlreport.html
+          git commit -m "Add test results HTML report"
           git push origin main
