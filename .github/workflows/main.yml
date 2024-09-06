@@ -106,29 +106,24 @@ jobs:
       # #   run: rm -rf testResults
       # Create gh-pages branch if it doesn't exist
       # Configure git with your identity
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test-api
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Checking out the default branch to which we want to add the test results
-          ref: main
-
-      - name: Download Test Results Artifact
+      # Download the artifact
+      - name: Download the test results artifact
         uses: actions/download-artifact@v2
         with:
           name: RunReports
 
-      - name: Create New Directory and Copy Files
+      # Create a directory in the repo and copy test results there
+      - name: Copy test results to repo
         run: |
-          mkdir -p my-test-results # Replace this with your desired directory name
-          cp -r testResults/* my-test-results/
+          mkdir -p results
+          cp -r testResults/* results/
+          ls -al results
 
-      - name: Commit and Push results
+      # Commit and push the results to the repo
+      - name: Commit and push results
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add my-test-results
-          git commit -m "Add test results to repository"
+          git add results
+          git commit -m "Add test results"
           git push origin main
