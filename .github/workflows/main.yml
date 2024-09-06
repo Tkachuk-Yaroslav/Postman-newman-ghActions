@@ -104,3 +104,36 @@ jobs:
       # # Clean up workspace (optional)
       # # - name: Clean up workspace
       # #   run: rm -rf testResults
+      # Create gh-pages branch if it doesn't exist
+      - name: Create gh-pages branch if not exists
+        run: |
+          git fetch origin
+          if [ `git branch --list gh-pages` ]; then
+            echo "Branch 'gh-pages' already exists"
+          else
+            git checkout --orphan gh-pages
+            git reset --hard
+            git commit --allow-empty -m "Initial commit on gh-pages"
+            git push origin gh-pages
+          fi
+
+      # Checkout gh-pages branch
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      # Copy the test results to the gh-pages directory
+      - name: Copy results to gh-pages
+        run: |
+          mkdir -p docs
+          cp -r testResults/* docs/
+
+      # Commit and push the results to gh-pages branch
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs
+          git commit -m "Deploy test results to GitHub Pages"
+          git push origin gh-pages
