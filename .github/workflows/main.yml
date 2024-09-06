@@ -106,7 +106,7 @@ jobs:
       # #   run: rm -rf testResults
       # Create gh-pages branch if it doesn't exist
       # Configure git with your identity
-        deploy:
+  deploy:
     needs: test-api
     runs-on: ubuntu-latest
     steps:
