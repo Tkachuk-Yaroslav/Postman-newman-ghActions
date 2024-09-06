@@ -173,8 +173,7 @@ jobs:
       - name: Copy results to gh-pages
         run: |
           mkdir -p docs
-          cp -r results/* docs/
-          ls -al docs
+          cp -r results/*
 
       # Commit and push results to gh-pages branch
       - name: Commit and push results to gh-pages
