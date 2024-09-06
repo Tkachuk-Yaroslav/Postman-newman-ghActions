@@ -106,23 +106,15 @@ jobs:
       # #   run: rm -rf testResults
       # Create gh-pages branch if it doesn't exist
       # Configure git with your identity
-      - name: Configure Git
-        run: |
-          git config --global user.name "Tkachuk-Yaroslav"
-          git config --global user.email "tkachuky105@gmail.com"
-
-      # Create gh-pages branch if it doesn't exist
-      - name: Create gh-pages branch if not exists
-        run: |
-          git fetch origin
-          if [ `git branch --list gh-pages` ]; then
-            echo "Branch 'gh-pages' already exists"
-          else
-            git checkout --orphan gh-pages
-            git reset --hard
-            git commit --allow-empty -m "Initial commit on gh-pages"
-            git push origin gh-pages
-          fi
+        deploy:
+    needs: test-api
+    runs-on: ubuntu-latest
+    steps:
+      # Download the artifact from the previous job
+      - name: Download test results
+        uses: actions/download-artifact@v2
+        with:
+          name: RunReports
 
       # Checkout gh-pages branch
       - name: Checkout gh-pages branch
@@ -136,11 +128,15 @@ jobs:
           mkdir -p docs
           cp -r testResults/* docs/
 
-      # Commit and push the results to gh-pages branch
-      - name: Commit and push results
+      # Configure git with your identity
+      - name: Configure Git
         run: |
           git config user.name "Tkachuk-Yaroslav"
           git config user.email "tkachuky105@gmail.com"
+
+      # Commit and push the results to gh-pages branch
+      - name: Commit and push results
+        run: |
           git add docs
           git commit -m "Deploy test results to GitHub Pages"
           git push origin gh-pages
