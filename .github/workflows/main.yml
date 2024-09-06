@@ -39,68 +39,6 @@
 # #           name: RunReports
 # #           path: testResults
 
-# name: Test-Build
-# on:
-#   push:
-#     branches:
-#       - main
-# jobs:
-#   test-api:
-#     runs-on: ubuntu-latest
-#     steps:
-#       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-#       - uses: actions/checkout@v2
-
-#       # Install Node on the runner
-#       - name: Install Node
-#         uses: actions/setup-node@v1
-#         with:
-#           node-version: "16.x"
-
-#       # Install the newman command line utility and also install the html extra reporter
-#       - name: Install newman
-#         run: |
-#           npm install -g newman
-#           npm install -g newman-reporter-htmlextra
-
-#       # Make directory to upload the test results
-#       - name: Make Directory for results
-#         run: mkdir -p testResults
-
-#       # Run the POSTMAN collection
-#       - name: Run POSTMAN collection
-#         run: |
-#           newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html
-#         continue-on-error: true
-
-#       # Upload the contents of Test Results directory to workspace
-#       - name: Output the run Details
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: RunReports
-#           path: testResults
-
-#       - name: Download the test results artifact
-#         uses: actions/download-artifact@v2
-#         with:
-#           name: RunReports
-
-#       # Create a directory in the repo and copy test results there
-#       - name: Copy test results to repo
-#         run: |
-#           mkdir -p results
-#           cp -r testResults/* results/
-#           ls -al results
-
-#       # Commit and push the results to the repo
-#       - name: Commit and push results
-#         run: |
-#           git config user.name "github-actions"
-#           git config user.email "actions@github.com"
-#           git add results
-#           git commit -m "Add test results"
-#           git push origin main
-
 name: Test-Build
 on:
   push:
@@ -147,11 +85,11 @@ jobs:
         with:
           name: RunReports
 
-      # Copy the HTML report to the root directory
-      - name: Copy HTML report to root
+      # Create a directory in the repo and copy test results there
+      - name: Copy test results to repo
         run: |
           mkdir -p results
-          cp testResults/htmlreport.html results/
+          cp -r testResults/* results/
           ls -al results
 
       # Commit and push the results to the repo
@@ -159,6 +97,68 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add results/htmlreport.html
-          git commit -m "Add test results HTML report"
+          git add results
+          git commit -m "Add test results"
           git push origin main
+
+# # name: Test-Build
+# # on:
+# #   push:
+# #     branches:
+# #       - main
+# # jobs:
+# #   test-api:
+# #     runs-on: ubuntu-latest
+# #     steps:
+# #       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+# #       - uses: actions/checkout@v2
+
+# #       # Install Node on the runner
+# #       - name: Install Node
+# #         uses: actions/setup-node@v1
+# #         with:
+# #           node-version: "16.x"
+
+# #       # Install the newman command line utility and also install the html extra reporter
+# #       - name: Install newman
+# #         run: |
+# #           npm install -g newman
+# #           npm install -g newman-reporter-htmlextra
+
+# #       # Make directory to upload the test results
+# #       - name: Make Directory for results
+# #         run: mkdir -p testResults
+
+# #       # Run the POSTMAN collection
+# #       - name: Run POSTMAN collection
+# #         run: |
+# #           newman run petstore.collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html
+# #         continue-on-error: true
+
+# #       # Upload the contents of Test Results directory to workspace
+# #       - name: Output the run Details
+# #         uses: actions/upload-artifact@v2
+# #         with:
+# #           name: RunReports
+# #           path: testResults
+
+# #       - name: Download the test results artifact
+# #         uses: actions/download-artifact@v2
+# #         with:
+# #           name: RunReports
+
+# #       # Copy the HTML report to the root directory
+# #       - name: Copy HTML report to root
+# #         run: |
+# #           mkdir -p results
+# #           cp testResults/htmlreport.html results/
+# #           ls -al results
+
+# #       # Commit and push the results to the repo
+# #       - name: Commit and push results
+# #         run: |
+# #           git config user.name "github-actions"
+# #           git config user.email "actions@github.com"
+# #           git add results/htmlreport.html
+# #           git commit -m "Add test results HTML report"
+# #           git push origin main
